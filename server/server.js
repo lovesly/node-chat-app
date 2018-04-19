@@ -18,9 +18,10 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newMsg', generateMsg('Admin', 'New user joined'));
 
-    socket.on('createMsg', (data) => {
+    socket.on('createMsg', (data, cb) => {
         console.log('createMsg', data);
         io.emit('newMsg', generateMsg(data.from, data.text));
+        cb('This is from the server');
     });
 
     socket.on('disconnect', () => {
