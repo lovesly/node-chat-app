@@ -13,8 +13,15 @@ app.use(express.static(path.join(__dirname, '../public')));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.on('disconnect', () => {
-        console.log('Disconnect from client');
+    socket.emit('newMsg', {
+        from: 'Admin',
+        text: 'Welcome to the chat room',
+    });
+
+    socket.broadcast.emit('newMsg', {
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime(),
     });
 
     socket.on('createMsg', (data) => {
@@ -24,6 +31,16 @@ io.on('connection', (socket) => {
             text: data.text,
             createdAt: new Date().getTime(),
         });
+
+        // socket.broadcast.emit('newMsg', {
+        //     from: data.from,
+        //     text: data.text,
+        //     createdAt: new Date().getTime(),
+        // });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Disconnect from client');
     });
 });
 
