@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 const server = http.createServer(app);
 const io = socketIO(server);
-const { generateMsg } = require('./utils/message');
+const { generateMsg, generateLocationMsg } = require('./utils/message');
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -22,6 +22,10 @@ io.on('connection', (socket) => {
         console.log('createMsg', data);
         io.emit('newMsg', generateMsg(data.from, data.text));
         cb('This is from the server');
+    });
+
+    socket.on('createLocationMsg', (data) => {
+        io.emit('newLocationMsg', generateLocationMsg('Admin', data.latitude, data.longitude));
     });
 
     socket.on('disconnect', () => {
