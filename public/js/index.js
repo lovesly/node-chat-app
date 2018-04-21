@@ -1,6 +1,20 @@
 /* eslint-disable */
 var socket = io();
 
+function scrollToBottom() {
+    var messages = $('#messages');
+    var newMsg = messages.children('li:last-child');
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMsgHieght = newMsg.innerHeight();
+    var lastMsgHeight = newMsg.prev().innerHeight();
+    // funny logic
+    if (clientHeight + scrollTop + newMsgHieght + lastMsgHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+};
+
 socket.on('connect', function() {
     console.log('Connected to server');
 });
@@ -18,6 +32,7 @@ socket.on('newMsg', function(data) {
         createdAt: formattedTime,
     });
     $('#messages').append(html);
+    scrollToBottom();
 
     // var li = $('<li></li>');
     // li.text(`${data.from} ${formattedTime}: ${data.text}`);
@@ -33,6 +48,7 @@ socket.on('newLocationMsg', function(data) {
         createdAt: formattedTime,
     });
     $('#messages').append(html);
+    scrollToBottom();
 
     // var li = $('<li></li>');
     // var a = $('<a target="_blank">My current location</a>');
@@ -72,5 +88,4 @@ locationBtn.click(function () {
             alert('Unable to fetch location');
         });
     }, 1000);
-    
 });
