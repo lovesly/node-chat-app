@@ -1,6 +1,6 @@
 /* eslint-disable */
 var socket = io();
-
+var currentUser;
 function scrollToBottom() {
     var messages = $('#messages');
     var newMsg = messages.children('li:last-child');
@@ -16,11 +16,28 @@ function scrollToBottom() {
 };
 
 socket.on('connect', function() {
-    console.log('Connected to server');
+    var params = $.deparam(window.location.search);
+    currentUser = params.name;
+    socket.emit('join', params, function(err) {
+        if (err) {
+            alert(err);
+            window.location.herf = '/';
+        } else {    
+            console.log('No error');
+        }
+    });
 });
 
 socket.on('disconnect', function() {
     console.log('Disconnected from server');
+});
+
+socket.on('udateUserList', function(users) {
+    var ol = $('<ol></ol>');
+    users.forEach(function(user) {
+        ol.append($('<li></li>').text(user));
+    });
+    $('#users').html(ol);
 });
 
 socket.on('newMsg', function(data) {
@@ -62,7 +79,7 @@ $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var messageTextbox = $('[name=message]');
     socket.emit('createMsg', {
-        from: 'User',
+        from: currentUser,
         text: messageTextbox.val(),
     }, function () {
         messageTextbox.val('');
