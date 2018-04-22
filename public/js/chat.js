@@ -1,6 +1,5 @@
 /* eslint-disable */
 var socket = io();
-var currentUser;
 function scrollToBottom() {
     var messages = $('#messages');
     var newMsg = messages.children('li:last-child');
@@ -17,7 +16,6 @@ function scrollToBottom() {
 
 socket.on('connect', function() {
     var params = $.deparam(window.location.search);
-    currentUser = params.name;
     socket.emit('join', params, function(err) {
         if (err) {
             alert(err);
@@ -79,7 +77,7 @@ $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var messageTextbox = $('[name=message]');
     socket.emit('createMsg', {
-        from: currentUser,
+        // from: currentUser,
         text: messageTextbox.val(),
     }, function () {
         messageTextbox.val('');

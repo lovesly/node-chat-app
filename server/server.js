@@ -19,13 +19,18 @@ io.on('connection', (socket) => {
     console.log('New user connected');
 
     socket.on('createMsg', (data, cb) => {
-        console.log('createMsg', data);
-        io.emit('newMsg', generateMsg(data.from, data.text));
+        const user = users.getUser(socket.id);
+        if (user && isRealString(data.text)) {
+            io.to(user.room).emit('newMsg', generateMsg(user.name, data.text));
+        }
         cb();
     });
 
     socket.on('createLocationMsg', (data) => {
-        io.emit('newLocationMsg', generateLocationMsg('Admin', data.latitude, data.longitude));
+        const user = users.getUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('newLocationMsg', generateLocationMsg(user.name, data.latitude, data.longitude));
+        }
     });
 
     socket.on('disconnect', () => {
